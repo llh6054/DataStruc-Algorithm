@@ -4,6 +4,11 @@ import java.math.BigDecimal;
 import com.list.MyArrayList;
 
 public class StackApp {
+	
+	private static final Integer leftCurPriority = 0;
+	private static final Integer addSubPriority = 1;
+	private static final Integer multiDivPriority = 2;
+	private static final Integer rightCurPriority = 3;
 
 	public static void main(String[] args) {
 		
@@ -81,13 +86,14 @@ public class StackApp {
 	 * @return true if s is operator, vice verse.
 	 */
 	private boolean isOperator(String opera) {
-		return opera.equals("+") || opera.equals("-") || opera.equals("*") || opera.equals("/");
+		return opera.equals("+") || opera.equals("-") || opera.equals("*") || opera.equals("/") || opera.equals("(") || opera.equals(")");
 	}
 	
 	/**
+	 * Translate infix expressions to postfix
 	 * 
 	 * @param infix
-	 * @return
+	 * @return postfix expressions
 	 */
 	public String infixToPostfix(String infix) {
 		StringBuilder postfix = new StringBuilder();
@@ -96,17 +102,30 @@ public class StackApp {
 		String[] sArr = infix.split(" "); 
 		
 		for(String s : sArr) {
+			
 			if(isOperator(s)) {
-//				isPreceding(s) ? stack.push(s):stack.pop();
-				if(lowerPriority(s))
-					stack.push(s); 
-				else  
-					postfix.append(stack.pop());
+				if(stack.isEmpty()) {
+					postfix.append(stack.push(s));
+					continue;
+				}
+					
+					
+				while(!stack.isEmpty()) {
+					//if s is operator and has a higher priority, push it onto stack and break.
+					if(!lowerPriority(s,stack.peek())) {
+						stack.push(s); 
+						break;
+					}
+					//otherwise pop an element from stack and go on.
+					else {
+						if(!isParentheses(s))
+							postfix.append(stack.pop());
+					}
+						
+				}
 			}else {
 				postfix.append(s);
 			}
-			
-			
 		}
 		
 		return postfix.toString();
@@ -114,13 +133,48 @@ public class StackApp {
 	}
 	
 	/**
+	 * if operator is a parentheses.
+	 * 
+	 * @param operator
+	 * @return true if operator is ( or )
+	 */
+	private boolean isParentheses(String operator) {
+		return operator.equals("(") || operator.equals(")");
+	}
+	
+	/**
 	 * whether operator has a lower priority
 	 * 
 	 * @param operator
-	 * @return true if operator has a lower priority the element of top stack 
+	 * @return true if operator has a lower priority to the element of top stack 
 	 */
-	private boolean lowerPriority(String operator) {
-		return false;
+	private boolean lowerPriority(String opera1, String opera2) {
+		return opera1.equals("(") && opera2.equals(")") ? false : getPriority(opera1) < getPriority(opera2);
 	}
-
+	
+	/**
+	 * Get the priority of operator
+	 * 
+	 * @param opera 
+	 * @return priority
+	 */
+	private Integer getPriority(String opera) {
+		Integer priority;
+		switch(opera) {
+			case "(": priority = leftCurPriority;
+				break;
+			case "+": priority = addSubPriority;
+				break;
+			case "-": priority = addSubPriority;
+				break;
+			case "*": priority = multiDivPriority;
+				break;
+			case "/": priority = multiDivPriority;
+				break;
+			case ")": priority = rightCurPriority;
+				break;
+			default : throw new IllegalArgumentException(opera);
+		}
+		return priority;
+	}
 }
