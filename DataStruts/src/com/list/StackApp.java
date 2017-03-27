@@ -98,36 +98,57 @@ public class StackApp {
 	public String infixToPostfix(String infix) {
 		StringBuilder postfix = new StringBuilder();
 		MyArrayList<String> stack = new MyArrayList<>();
+		int topOfStack = -1;
 		
 		String[] sArr = infix.split(" "); 
 		
 		for(String s : sArr) {
 			
 			if(isOperator(s)) {
-				if(stack.isEmpty()) {
-					postfix.append(stack.push(s));
+				if(topOfStack == -1) {
+					stack.push(s);
+					topOfStack++;
 					continue;
 				}
 					
 					
-				while(!stack.isEmpty()) {
+				while(topOfStack != -1) {
 					//if s is operator and has a higher priority, push it onto stack and break.
 					if(!lowerPriority(s,stack.peek())) {
-						stack.push(s); 
-						break;
+						if(s.equals(")")) { // a + has benn missed
+							while(!stack.peek().equals("("))
+								postfix.append(stack.pop());
+								topOfStack--;
+								System.out.println(postfix);
+						}else {
+							stack.push(s); 
+							topOfStack++;
+							break;
+						}
+						
 					}
 					//otherwise pop an element from stack and go on.
 					else {
-						if(!isParentheses(s))
+						if(!isParentheses(s)) {
 							postfix.append(stack.pop());
+							topOfStack--;
+						}
+							
+						System.out.println(postfix.toString());
 					}
 						
 				}
 			}else {
 				postfix.append(s);
+				System.out.println(postfix.toString());
 			}
 		}
 		
+		while(topOfStack != -1) {
+			postfix.append(stack.pop());
+			topOfStack--;
+		}
+			
 		return postfix.toString();
 		
 	}
@@ -149,7 +170,7 @@ public class StackApp {
 	 * @return true if operator has a lower priority to the element of top stack 
 	 */
 	private boolean lowerPriority(String opera1, String opera2) {
-		return opera1.equals("(") && opera2.equals(")") ? false : getPriority(opera1) < getPriority(opera2);
+		return getPriority(opera1) <= getPriority(opera2);
 	}
 	
 	/**

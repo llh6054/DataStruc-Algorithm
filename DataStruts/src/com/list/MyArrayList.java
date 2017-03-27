@@ -127,7 +127,8 @@ public class MyArrayList<AnyType> implements Iterable<AnyType>
 	*/
 	public AnyType peek() {
 		if(topOfStack == -1)
-			throw new EmptyStackException();
+	//		throw new EmptyStackException();
+			return null;
 		return get(topOfStack);
 	}
 
