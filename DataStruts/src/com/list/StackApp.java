@@ -2,7 +2,16 @@ package com.list;
 import java.math.BigDecimal;
 
 import com.list.MyArrayList;
-
+/**
+ * 
+ * @author chubby
+ * 2017/3/28
+ * 
+ * 1.字符逆置
+ * 2.后缀表达式求值
+ * 3.中缀表达式转后缀表达式
+ *
+ */
 public class StackApp {
 	
 	private static final Integer leftCurPriority = 0;
@@ -86,7 +95,7 @@ public class StackApp {
 	 * @return true if s is operator, vice verse.
 	 */
 	private boolean isOperator(String opera) {
-		return opera.equals("+") || opera.equals("-") || opera.equals("*") || opera.equals("/") || opera.equals("(") || opera.equals(")");
+		return opera.equals("+") || opera.equals("-") || opera.equals("*") || opera.equals("/");
 	}
 	
 	/**
@@ -105,40 +114,35 @@ public class StackApp {
 		for(String s : sArr) {
 			
 			if(isOperator(s)) {
-				if(topOfStack == -1) {
+				if(topOfStack == -1) {	//when operator stack is empty, pop an element
 					stack.push(s);
 					topOfStack++;
 					continue;
 				}
 					
-					
-				while(topOfStack != -1) {
-					//if s is operator and has a higher priority, push it onto stack and break.
-					if(!lowerPriority(s,stack.peek())) {
-						if(s.equals(")")) { // a + has benn missed
-							while(!stack.peek().equals("("))
-								postfix.append(stack.pop());
-								topOfStack--;
-								System.out.println(postfix);
-						}else {
-							stack.push(s); 
-							topOfStack++;
-							break;
-						}
-						
-					}
-					//otherwise pop an element from stack and go on.
-					else {
-						if(!isParentheses(s)) {
-							postfix.append(stack.pop());
-							topOfStack--;
-						}
-							
-						System.out.println(postfix.toString());
-					}
-						
+				//if stack is not empty and s not equals to  ( as well as priority of s is not higher to the element
+				//of top of stack, pop an element until the condition is not matched.
+				while(topOfStack != -1 && stack.peek() != "(" && getPriority(s) <= getPriority(stack.peek())) {
+					postfix.append(stack.pop());	//append operator to postfix.
+					topOfStack--;
 				}
-			}else {
+				//then push s onto stack. 
+				stack.push(s);
+				topOfStack++;
+			}
+			else if(s.equals("(")) {	//when s is ( push it onto stack.
+				stack.push(s);
+				topOfStack++;
+			}
+			else if(s.equals(")")) {	//when s is ) pop element until ( is matched
+				while(!stack.peek().equals("(")) {
+					postfix.append(stack.pop());	//operator is appended to postfix.
+					topOfStack--;
+				}
+				stack.pop();	//pop a ( but not append to postfix.
+				topOfStack--;
+			}
+			else {		//number is append to postfix.
 				postfix.append(s);
 				System.out.println(postfix.toString());
 			}
@@ -153,25 +157,6 @@ public class StackApp {
 		
 	}
 	
-	/**
-	 * if operator is a parentheses.
-	 * 
-	 * @param operator
-	 * @return true if operator is ( or )
-	 */
-	private boolean isParentheses(String operator) {
-		return operator.equals("(") || operator.equals(")");
-	}
-	
-	/**
-	 * whether operator has a lower priority
-	 * 
-	 * @param operator
-	 * @return true if operator has a lower priority to the element of top stack 
-	 */
-	private boolean lowerPriority(String opera1, String opera2) {
-		return getPriority(opera1) <= getPriority(opera2);
-	}
 	
 	/**
 	 * Get the priority of operator
@@ -180,7 +165,12 @@ public class StackApp {
 	 * @return priority
 	 */
 	private Integer getPriority(String opera) {
-		Integer priority;
+		
+		if(!isOperator(opera) && !opera.equals("(") && !opera.equals(")"))
+			throw new IllegalArgumentException(opera);
+		
+		Integer priority = -1;
+		
 		switch(opera) {
 			case "(": priority = leftCurPriority;
 				break;
@@ -194,7 +184,6 @@ public class StackApp {
 				break;
 			case ")": priority = rightCurPriority;
 				break;
-			default : throw new IllegalArgumentException(opera);
 		}
 		return priority;
 	}
