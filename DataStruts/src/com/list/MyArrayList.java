@@ -1,6 +1,5 @@
 package com.list;
 
-import java.util.EmptyStackException;
 
 public class MyArrayList<AnyType> implements Iterable<AnyType>
 {
@@ -106,6 +105,14 @@ public class MyArrayList<AnyType> implements Iterable<AnyType>
 		topOfStack--;
 		return x;
 		
+	}
+	
+	/**
+	 * 
+	 * @return true if stack is empty
+	 */
+	public boolean stackIsEmpty() {
+		return topOfStack < 0;
 	}
 
 	/**
