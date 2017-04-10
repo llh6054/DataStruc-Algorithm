@@ -1,5 +1,6 @@
 package com.list;
 
+import java.util.Iterator;
 
 public class MyArrayList<AnyType> implements Iterable<AnyType>
 {
@@ -134,9 +135,21 @@ public class MyArrayList<AnyType> implements Iterable<AnyType>
 	*/
 	public AnyType peek() {
 		if(topOfStack == -1)
-	//		throw new EmptyStackException();
 			return null;
 		return get(topOfStack);
+	}
+	
+	/**
+	 * add all items' element to the arrayList.
+	 * 
+	 * @param items collection to be added
+	 */
+	public void addAll(Iterable<? extends AnyType> items) {
+		Iterator<? extends AnyType> iter = items.iterator();
+		
+		while(iter.hasNext()) {
+			add(iter.next());
+		}
 	}
 
 	/**
