@@ -1,5 +1,7 @@
 package com.list;
 
+import java.awt.event.ItemListener;
+import java.util.Iterator;
 
 /**
 	LinkList class implements a doubly-linked list.
@@ -153,6 +155,25 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType>
 	public AnyType remove(int idx) 
 	{
 		return remove(getNode(idx));
+	}
+	
+	/**
+	 * Remove all item that is included by items from this collection.
+	 * 
+	 * @param items items to be removed
+	 */
+	public void removeAll(Iterable<? extends AnyType> items) {
+		Iterator<? extends AnyType> iteItems = items.iterator();
+		AnyType item;
+		
+		while(iteItems.hasNext()) {
+			item = iteItems.next();
+			Iterator<? extends AnyType> iteList = iterator();
+			while(iteList.hasNext()) {
+				if(iteList.next().equals(item))
+					iteList.remove();;
+			}
+		}
 	}
 
 	/**
