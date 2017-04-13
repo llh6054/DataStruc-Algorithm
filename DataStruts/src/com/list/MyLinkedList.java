@@ -1,6 +1,5 @@
 package com.list;
 
-import java.awt.event.ItemListener;
 import java.util.Iterator;
 
 /**

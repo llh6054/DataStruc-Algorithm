@@ -113,7 +113,7 @@ public class MyUniDirectionLinkedList<AnyType>
 	}
 
 	/**
-		Delete node by data, only delete first node.
+		Delete node by data and return it, only delete first node.
 		@param data data to be matched.
 		@return Node Node has been deleted, null if there's no match.
 	*/
@@ -135,7 +135,10 @@ public class MyUniDirectionLinkedList<AnyType>
 		{
 			previous = current;
 			if(current.data == data) 
+			{
 				tempNode = current;
+				break;
+			}
 			else
 				current = current.next;
 		}
@@ -149,7 +152,7 @@ public class MyUniDirectionLinkedList<AnyType>
 	/**
 		Find node by position.
 		@param idx index of the node.
-		@return Node node at index postion.
+		@return Node node at index position.
 	*/
 	public AnyType findNodeByPos(int idx)
 	{
