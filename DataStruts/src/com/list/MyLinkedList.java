@@ -52,8 +52,28 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType>
 		@param x any object
 		@return true.
 	*/
+	public boolean addLast(AnyType x) {
+		add(size(), x);
+		return true;
+	}
+	
+	/**
+		Adds an item to this collection, at the end.
+		@param x any object
+		@return true.
+	 */
 	public boolean add(AnyType x) {
 		add(size(), x);
+		return true;
+	}
+	
+	/**
+	 * Adds an item to this collection, at the firt position.
+	 * @param x any object
+	 * @return true
+	 */
+	public boolean addFirst(AnyType x) {
+		add(0, x);
 		return true;
 	}
 
@@ -92,6 +112,22 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType>
 	*/
 	public AnyType get(int idx) {
 		return getNode(idx).data;
+	}
+	
+	/**
+	 * Gets the item at first position.
+	 * @return item at the first position.
+	 */
+	public AnyType getFirst() {
+		return getNode(0).data;
+	}
+	
+	/**
+	 * Gets the item at last position.
+	 * @return item at the last position.
+	 */
+	public AnyType getLast() {
+		return getNode(size() - 1).data;
 	}
 
 	/**
@@ -154,6 +190,22 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType>
 	public AnyType remove(int idx) 
 	{
 		return remove(getNode(idx));
+	}
+	
+	/**
+	 * Removes the item at the first position.
+	 * @return the item
+	 */
+	public AnyType removeFirst() {
+		return remove(0);
+	}
+	
+	/**
+	 * Removes the item at the last position.
+	 * @return the item
+	 */
+	public AnyType removeLast() {
+		return remove(size() - 1);
 	}
 	
 	/**
