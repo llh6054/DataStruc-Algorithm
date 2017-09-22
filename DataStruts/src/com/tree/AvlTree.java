@@ -16,6 +16,15 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
 		root = null;
 	}
 	
+	/**
+	 * Return the height of node t, -1 if null.
+	 * @param t
+	 * @return
+	 */
+	private int height(AvlNode<AnyType> t) {
+		return t == null ? -1 : t.height;
+	}
+	
 	public void insert(AnyType x) {
 		root = insert(x, root);
 	}
@@ -52,7 +61,22 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
 	 * @return the new root of subtree.
 	 */
 	private AvlNode<AnyType> remove(AnyType x, AvlNode<AnyType> t) {
+		if(t == null)
+			return t;
 		
+		int compareResult = x.compareTo(t.element);
+		
+		if(compareResult < 0)
+			t.left =  remove(x, t.left);
+		else if(compareResult > 0)
+			t.right = remove(x, t.right);
+		else if(t.left != null && t.right != null) {	//have to children.
+			t.element = findMin(t.right).element;
+			t.right =  remove(t.element, t.right);
+		}else
+			t = (t.left != null ? t.left : t.right);
+		
+		return balance(t);
 	}
 	
 	public AnyType findMin() {
@@ -60,7 +84,6 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
 			throw new UnderFlowException();
 		return findMin(root).element;
 	}
-	
 	
 	/**
 	 * Internal method to find a smallest item in a subtree.
@@ -96,6 +119,99 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
 		return t;
 	}
 	
+	public boolean contains(AnyType x) {
+		return contains(x, root);
+	}
+	
+	/**
+	 * Internal method to find an item in a subtree.
+	 * @param x the item to find.
+	 * @param t	node that roots the subtree.
+	 * @return true if found, else false.
+	 */
+	private boolean contains(AnyType x, AvlNode<AnyType> t) {
+		
+		while(t != null) {
+			int compareResult = x.compareTo(t.element);
+			if(compareResult < 0)
+				t = t.left;
+			else if(compareResult > 0)
+				t = t.right;
+			else		//Match
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public void printTree() {
+		if(isEmpty())
+			System.out.println("empty tree");
+		else
+			printTree(root);
+	}
+	
+	/**
+	 * Internal method print subtree.
+	 * @param t node that roots the subtree.
+	 */
+	private void printTree(AvlNode<AnyType> t) {
+		if(t != null) {
+			printTree(t.left);
+			System.out.println(t.element);
+			printTree(t.right);
+		}
+	}
+	
+	private static final int ALLOWED_IMBALANCE = 1;
+	
+	private AvlNode<AnyType> balance(AvlNode<AnyType> t) {
+		if(t == null)
+			return t;
+		
+		if(height(t.left) - height(t.right) > ALLOWED_IMBALANCE)
+			if(height(t.left.left) >= height(t.left.right))
+				t = rotateWithLeftChild(t);
+			else
+				t = doubleWithLeftChild(t);
+		else if(height(t.right) - height(t.left) > ALLOWED_IMBALANCE)
+			if(height(t.right.left) >= height(t.right.right))
+				t = rotateWithRightChild(t);
+			else
+				t = doubleWithRightChild(t);
+	}
+	
+	/**
+	 * Rotate binary tree node with left child.
+	 * For AVL trees, this is a single rotation for case 1.
+	 * Update heights, then return new root.
+	 * @param k2
+	 * @return
+	 */
+	private AvlNode<AnyType> rotateWithLeftChild(AvlNode<AnyType> k2) {
+		AvlNode<AnyType> k1 = k2.left;
+		k2.left = k1.right;
+		k1.right = k2;
+		k2.height = Math.max(height(k2.left), height(k2.right)) + 1;
+		k1.height = Math.max(height(k1.left), k2.height) + 1;
+		return k1;
+	}
+	
+	/**
+	 * Rotate binary tree node with right child.
+	 * For AVL trees, this is a single rotation for case 4.
+	 * Update heights, then return new root.
+	 * @param k1
+	 * @return
+	 */
+	private AvlNode<AnyType> rotateWithRightChild(AvlNode<AnyType> k1) {
+		AvlNode<AnyType> k2 = k1.right;
+		k1.right = k2.left;
+		k2.left = k1;
+		k1.height = Math.max(height(k1.left), height(k1.right)) + 1;
+		k2.height = Math.max(k1.height, height(k2.right)) + 1;
+		return k2;
+	}
 	
 	private static class AvlNode<AnyType> {
 		
