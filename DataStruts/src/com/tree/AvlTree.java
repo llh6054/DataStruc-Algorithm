@@ -179,6 +179,9 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
 				t = rotateWithRightChild(t);
 			else
 				t = doubleWithRightChild(t);
+		
+		t.height = Math.max( height( t.left ), height( t.right ) ) + 1;
+        return t;
 	}
 	
 	/**
@@ -211,6 +214,31 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
 		k1.height = Math.max(height(k1.left), height(k1.right)) + 1;
 		k2.height = Math.max(k1.height, height(k2.right)) + 1;
 		return k2;
+	}
+	
+	/**
+	 * Double rotate binary tree node : first left child
+	 * with its right child; then node k3 with new left child.
+	 * For AVL trees, this is a double rotation for case 2.
+	 * Update heights, then return new root.
+	 * @param k3
+	 * @return
+	 */
+	private AvlNode<AnyType> doubleWithLeftChild(AvlNode<AnyType> k3) {
+		k3.left  = rotateWithRightChild(k3.left);
+		return rotateWithLeftChild(k3);
+	}
+	
+	/**
+	 * Double rotate binary tree node : first right child
+	 * with its left child; then node k4 with new right child.
+	 * For AVL trees, this is a double rotation for case 3 
+	 * @param k4
+	 * @return
+	 */
+	private AvlNode<AnyType> doubleWithRightChild(AvlNode<AnyType> k4) {
+		k4.right = rotateWithLeftChild(k4.right);
+		return rotateWithRightChild(k4);
 	}
 	
 	private static class AvlNode<AnyType> {
