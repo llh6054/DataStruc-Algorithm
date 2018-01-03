@@ -139,7 +139,7 @@ public class SeparateChainingHashTable<AnyType> {
 		if(n == 1 || n % 2 == 0)
 			return false;
 		
-		for(int i = 3; i * i < n; i+=2)
+		for(int i = 3; i * i <= n; i+=2)	//= really matters?
 			if(n % i == 0)
 				return false;
 		
@@ -159,14 +159,14 @@ public class SeparateChainingHashTable<AnyType> {
 		
 		for(int i = GAP; i != 0; i = (i +  GAP) % NUMS)
 			H.insert(i);
-		for(int i = 0; i < NUMS; i += 2)
+		for(int i = 1; i < NUMS; i += 2)
 			H.remove(i);
 		
-		for(int i = 0; i < NUMS; i += 2) 
+		for(int i = 2; i < NUMS; i += 2) 
 			if(!H.contains(i))
 				System.out.println("Find fails " + i);
 		
-		for(int i = 0; i < NUMS; i += 2)
+		for(int i = 1; i < NUMS; i += 2)
 			if(H.contains(i))
 				System.out.println("OOPS!!!! "  + i);
 		
