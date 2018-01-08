@@ -4,6 +4,9 @@ package com.hash;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *Spearate chaining implementation of hash tables
+ */
 public class SeparateChainingHashTable<AnyType> {
 	
 	private static final int DEFAULT_TABLE_SIZE = 101;
