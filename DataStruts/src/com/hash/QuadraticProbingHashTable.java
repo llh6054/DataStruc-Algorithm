@@ -7,7 +7,8 @@ public class QuadraticProbingHashTable<AnyType> {
 	
 	private static final int DEFAULT_TABLE_SIZE = 101;
 	private HashEntry<AnyType>[] array;
-	private int currentSize;
+	private int occupied;	//The number of occupied cells
+	private int theSize; 	//Current size
 	
 	public QuadraticProbingHashTable() {
 		this(DEFAULT_TABLE_SIZE);
@@ -23,16 +24,33 @@ public class QuadraticProbingHashTable<AnyType> {
 	 * @param arraySize the size of the array
 	 */
 	private void allocateArray(int arraySize) {
-		array = new HashEntry[arraySize];
+		array = new HashEntry[nextPrime(arraySize)];
 	}
 	
 	/**
 	 * Make the hash table logical empty
 	 */
 	private void makeEmpty() {
-		currentSize = 0;
+		occupied = 0;
+		theSize = 0;
 		for(int i = 0; i < array.length; i++) 
 			array[i] = null;
+	}
+	
+	/**
+	 * Get current size
+	 * @return current size
+	 */
+	public int size() {
+		return theSize;
+	}
+	
+	/**
+	 * Get capacity
+	 * @return capacity of the hash table
+	 */
+	public int capacity() {
+		return array.length;
 	}
 	
 	/**
@@ -43,6 +61,56 @@ public class QuadraticProbingHashTable<AnyType> {
 	public boolean contains(AnyType x) {
 		int curPos = findPos(x);
 		return isActive(curPos);
+	}
+	
+	/**
+	 * Insert item to hash table, if x already present, do nothing
+	 * @param x the item to insert
+	 */
+	public boolean insert(AnyType x) {
+		//insert x as active
+		int currentPos = findPos(x);
+		if(isActive(currentPos))
+			return false;
+		
+		array[currentPos] = new HashEntry<AnyType>(x, true);
+		theSize++;
+		if(++occupied > array.length / 2)
+			rehash();
+		
+		return true;
+	}
+	
+	/**
+	 * Remove from the hash table
+	 * @param x the item to remove
+	 * @return true if removed, false otherwise
+	 */
+	public boolean remove(AnyType x) {
+		int currentPos = findPos(x);
+		if(isActive(currentPos)) {
+			array[currentPos].isActive = false;
+			theSize--;
+			return true;
+		}else
+			return false;
+			
+	}
+	
+	/**
+	 * Expand hash table
+	 */
+	private void rehash() {
+		HashEntry<AnyType> []oldArray = array;
+		allocateArray(2 * oldArray.length);
+		occupied = 0;
+		theSize = 0;
+		
+		//Copy table over
+		for(HashEntry<AnyType> entry : oldArray) 
+			if(entry != null && entry.isActive)
+				insert(entry.element);
+		
 	}
 	
 	/**
@@ -58,7 +126,7 @@ public class QuadraticProbingHashTable<AnyType> {
 			curPos += offset;
 			offset += 2;
 			
-			if(curPos > array.length)
+			if(curPos >= array.length)	//	do = really matters? absolutely !!!
 				curPos -=array.length;
 		}
 		
@@ -136,9 +204,39 @@ public class QuadraticProbingHashTable<AnyType> {
 		return true;
 	}
 	
-
+	//Simple main
 	public static void main(String[] args) {
+		QuadraticProbingHashTable<String> H = new QuadraticProbingHashTable<>();
+		long startTime = System.currentTimeMillis();
+		
+		final int NUMS = 2000000;
+		final int GAP = 37;
+		
+		System.out.println("Checking...(no more outputs means success)");
+		
+		  for( int i = GAP; i != 0; i = ( i + GAP ) % NUMS )
+	            H.insert( ""+i );
+	        for( int i = GAP; i != 0; i = ( i + GAP ) % NUMS )
+	            if( H.insert( ""+i ) )
+	                System.out.println( "OOPS!!! " + i );
+	        for( int i = 1; i < NUMS; i+= 2 )
+	            H.remove( ""+i );
 
+	        for( int i = 2; i < NUMS; i+=2 )
+	            if( !H.contains( ""+i ) )
+	                System.out.println( "Find fails " + i );
+
+	        for( int i = 1; i < NUMS; i+=2 )
+	        {
+	            if( H.contains( ""+i ) )
+	                System.out.println( "OOPS!!! " +  i  );
+	        }
+	        
+	        long endTime = System.currentTimeMillis( );
+	        
+	        System.out.println( "Elapsed time: " + (endTime - startTime) );
+	        System.out.println( "H size is: " + H.size( ) );
+	        System.out.println( "Array size is: " + H.capacity( ) );
 	}
 
 }
